@@ -17,7 +17,9 @@ app.post('/', function(req, res) {
     res.status(200).end();
 });
 
-var server = app.listen(5000);
+var server = app.listen(5000, function() {
+    console.log('Server listening on port ' + server.address().port);
+});
 
 // Starting
 var slack = new slackAPI({
