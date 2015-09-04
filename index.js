@@ -17,7 +17,7 @@ app.post('/', function(req, res) {
     res.status(200).end();
 });
 
-var server = app.listen(3000);
+var server = app.listen(5000);
 
 // Starting
 var slack = new slackAPI({
