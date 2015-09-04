@@ -13,12 +13,14 @@ var aliases = [
     {
         channel: 'C04356B87',
         from: '@api',
-        to: ['<@U04356B7F>']
+        to: ['<@U04356B7F>'],
+        author: 'U04356B7F'
     },
     {
         channel: 'C04356B87',
         from: '@test',
-        to: ['<@U04356B7F>']
+        to: ['<@U04356B7F>'],
+        author: 'U04356B7A'
     }
 ];
 
@@ -67,7 +69,6 @@ app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/', function(req, res) {
-    console.log(req.originalUrl);
     if(req.query.token === process.env.SLACK_SLASH_TOKEN) {
         var text = req.query.text;
 
@@ -76,8 +77,10 @@ app.get('/', function(req, res) {
 
             if(matches && matches.length) {
                 var message = 'These are the aliases set up for this channel:\n';
-                _.each(matches, function(match){
-                    message += match.from + ' -> ' + match.to.join(', ') + '\n'
+                _.each(matches, function(match) {
+                    message += match.from + ' -> @' + _.map(match.to, function(user){
+                            return slack.getUser(user.replace('<@', '').replace('>', '')).name
+                        }).join(', ') + '\n'
                 });
                 res.send(message);
             } else {
@@ -86,16 +89,72 @@ app.get('/', function(req, res) {
         }
 
         if(text.indexOf('add') === 0) {
-            // get a list of users in the channel
+            var split = text.split(' ');
 
+            if(split.length < 3) {
+                return res.status(400).send('Not enough parameters').end();
+            }
 
-            // send a message to the channel when successful
-            console.log(text);
+            var from = split[1];
+            var existing = _.findWhere(aliases, {from: from, channel: req.query.channel_id});
+
+            if(existing && existing.author !== req.query.user_id) {
+                return res.status(400).send('You cannot edit an alias made by someone else').end();
+            }
+
+            var to = split.splice(2, split.length - 2);
+
+            var error = false;
+
+            to = _.map(to, function(username) {
+                var user = slack.getUser(username.replace('@', ''));
+                if(!user) {
+                    error = 'User ' + username.replace('@', '') + ' does not exist!';
+                    return username;
+                } else {
+                    return '<@' + user.id + '>'
+                }
+            });
+
+            if(error) {
+                return res.status(400).send(error).end();
+            }
+
+            if(existing) {
+                aliases = _.reject(aliases, existing);
+            }
+
+            aliases.push({
+                channel: req.query.channel_id,
+                from: from,
+                to: to,
+                author: req.query.user_id
+            });
+
+            return res.status(200).send(existing ? 'Alias updated' : 'Alias created').end();
         }
 
         if(text.indexOf('remove') === 0) {
+            var split = text.split(' ');
 
-            // send a message to the channel when successful
+            if(split.length < 2) {
+                return res.status(400).send('Not enough parameters').end();
+            }
+
+            var from = split[1];
+            var existing = _.findWhere(aliases, {from: from, channel: req.query.channel_id});
+
+            if(!existing) {
+                return res.status(400).send('Alias ' + from + ' does not exist. Use `/alias list` to see all existing aliases. ')
+            }
+
+            if(existing.author !== req.query.user_id) {
+                return res.status(400).send('You cannot remove an alias made by someone else').end();
+            }
+
+            aliases = _.reject(aliases, existing);
+
+            return res.status(200).send('Alias removed').end();
         }
     }
 
