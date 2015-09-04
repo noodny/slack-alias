@@ -131,6 +131,9 @@ app.get('/', function(req, res) {
                 author: req.query.user_id
             });
 
+            slack.sendMsg(req.query.channel_id, 'User ' + slack.getUser(req.query.user_id).name + ' updated an alias: \n ' + from + ' -> @' + _.map(to, function(user){
+                    return slack.getUser(user.replace('<@', '').replace('>', '')).name
+                }).join(', '));
             return res.status(200).send(existing ? 'Alias updated' : 'Alias created').end();
         }
 
@@ -153,6 +156,8 @@ app.get('/', function(req, res) {
             }
 
             aliases = _.reject(aliases, existing);
+
+            slack.sendMsg(req.query.channel_id, 'User ' + slack.getUser(req.query.user_id).name + ' removed alias ' + from);
 
             return res.status(200).send('Alias removed').end();
         }
