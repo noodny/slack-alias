@@ -74,9 +74,9 @@ app.get('/', function(req, res) {
             var matches = _.where(aliases, {channel: req.query.channel_id});
 
             if(matches) {
-                var message = '';
+                var message = 'These are the aliases set up for this channel:\n';
                 _.each(matches, function(match){
-                    message += match.from + ' -> ' + match.to.join(', ')
+                    message += match.from + ' -> ' + match.to.join(', ') + '\n'
                 });
                 res.send(message);
             } else {
