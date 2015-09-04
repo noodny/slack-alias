@@ -3,26 +3,9 @@ var _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
 
-var app = express();
-
-app.use(bodyParser.json());
-app.use(bodyParser.raw());
-app.use(bodyParser.text());
-app.use(bodyParser.urlencoded({extended: true}));
-
-app.get('/', function(req, res) {
-    console.log(req.query);
-
-    res.status(200).end();
-});
-
-var server = app.listen(process.env.PORT || 5000, function() {
-    console.log('Server listening on port ' + server.address().port);
-});
-
 // Starting
 var slack = new slackAPI({
-    'token': process.env.API_TOKEN,
+    'token': process.env.SLACK_BOT_TOKEN,
     'logging': true
 });
 
@@ -74,4 +57,45 @@ slack.on('message', function(data) {
 
         slack.sendMsg(data.channel, message);
     }
+});
+
+var app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.raw());
+app.use(bodyParser.text());
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.get('/', function(req, res) {
+    if(req.query.token === process.env.SLACK_SLASH_TOKEN) {
+        var text = req.query.text;
+
+        if(text.indexOf('list') === 0) {
+            var matches = _.where(aliases, {channel: req.query.channel_id});
+
+            if(matches) {
+                var message = '';
+                _.each(matches, function(match){
+                    message += match.from + ' -> ' + match.to.join(', ')
+                });
+                res.send(message);
+            } else {
+                res.send('There are no aliases set up for this channel.');
+            }
+        }
+
+        if(text.indexOf('add') === 0) {
+            console.log(text);
+        }
+
+        if(text.indexOf('remove') === 0) {
+
+        }
+    }
+
+    res.status(200).end();
+});
+
+var server = app.listen(process.env.PORT || 5000, function() {
+    console.log('Server listening on port ' + server.address().port);
 });
