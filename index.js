@@ -10,9 +10,8 @@ app.use(bodyParser.raw());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.post('/', function(req, res) {
-    console.log(req.body);
-    console.log(typeof req.body);
+app.get('/', function(req, res) {
+    console.log(req.query);
 
     res.status(200).end();
 });
