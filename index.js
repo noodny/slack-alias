@@ -34,7 +34,7 @@ slack.on('message', function(data) {
         _.each(mentions, function(mention) {
             var found = _.where(aliases, {from: mention, channel: data.channel});
             //console.log(found);
-            if(found) {
+            if(found && found.length) {
                 matching = matching.concat(found);
                 replace.push(mention);
             }
@@ -67,13 +67,14 @@ app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/', function(req, res) {
+    console.log(req.originalUrl);
     if(req.query.token === process.env.SLACK_SLASH_TOKEN) {
         var text = req.query.text;
 
         if(text.indexOf('list') === 0) {
             var matches = _.where(aliases, {channel: req.query.channel_id});
 
-            if(matches) {
+            if(matches && matches.length) {
                 var message = 'These are the aliases set up for this channel:\n';
                 _.each(matches, function(match){
                     message += match.from + ' -> ' + match.to.join(', ') + '\n'
@@ -85,11 +86,16 @@ app.get('/', function(req, res) {
         }
 
         if(text.indexOf('add') === 0) {
+            // get a list of users in the channel
+
+
+            // send a message to the channel when successful
             console.log(text);
         }
 
         if(text.indexOf('remove') === 0) {
 
+            // send a message to the channel when successful
         }
     }
 
