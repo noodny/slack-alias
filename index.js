@@ -17,7 +17,7 @@ app.post('/', function(req, res) {
     res.status(200).end();
 });
 
-var server = app.listen(5000, function() {
+var server = app.listen(process.env.PORT || 5000, function() {
     console.log('Server listening on port ' + server.address().port);
 });
 
