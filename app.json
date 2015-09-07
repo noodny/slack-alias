@@ -12,7 +12,8 @@
   ],
   "env": {
     "APP_URL": {
-      "description": "(optional) This is the address of your application, something like YOUR_APP.herokuapp.com"
+      "description": "(optional) This is the address of your application, something like YOUR_APP.herokuapp.com",
+      "required": false
     },
     "SLACK_BOT_TOKEN": {
       "description": "This is the bot integration API Token, shown on your integrations page",
@@ -23,10 +24,12 @@
       "required": true
     },
     "KEYMETRICS_PPK": {
-      "description": "(optional) Keymetrics private key - use it together with KEYMETRICS_PUB to monitor your application with keymetrics.io"
+      "description": "(optional) Keymetrics private key - use it together with KEYMETRICS_PUB to monitor your application with keymetrics.io",
+      "required": false
     },
     "KEYMETRICS_PUB": {
-      "description": "(optional) Keymetrics public key - use it together with KEYMETRICS_PPK to monitor your application with keymetrics.io"
+      "description": "(optional) Keymetrics public key - use it together with KEYMETRICS_PPK to monitor your application with keymetrics.io",
+      "required": false
     }
   },
   "image": "heroku/nodejs",
