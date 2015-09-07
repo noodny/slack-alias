@@ -24,6 +24,7 @@
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
     "lodash": "^3.10.1",
+    "mongodb": "^2.0.42",
     "pm2": "^0.14.7",
     "pmx": "^0.4.6",
     "slackbotapi": "^1.3.4"
