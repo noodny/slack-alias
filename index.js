@@ -3,6 +3,11 @@ var _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
 
+if(!process.env.SLACK_BOT_TOKEN || !process.env.SLACK_SLASH_TOKEN) {
+    throw new Error('Slack tokens not set as environment variables. Exiting...');
+    process.exit(0);
+}
+
 // Starting
 var slack = new slackAPI({
     'token': process.env.SLACK_BOT_TOKEN,
