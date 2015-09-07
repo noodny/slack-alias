@@ -17,20 +17,7 @@ var slack = new slackAPI({
     'logging': true
 });
 
-var aliases = [
-    {
-        channel: 'C04356B87',
-        from: '@api',
-        to: ['<@U04356B7F>'],
-        author: 'U04356B7F'
-    },
-    {
-        channel: 'C04356B87',
-        from: '@test',
-        to: ['<@U04356B7F>'],
-        author: 'U04356B7A'
-    }
-];
+var aliases = [];
 
 slack.on('message', function(data) {
     if(typeof data.text == 'undefined') return;
