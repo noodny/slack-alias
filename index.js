@@ -2,6 +2,9 @@ var slackAPI = require('slackbotapi');
 var _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
+var pmx = require('pmx');
+
+pmx.init();
 
 if(!process.env.SLACK_BOT_TOKEN || !process.env.SLACK_SLASH_TOKEN) {
     throw new Error('Slack tokens not set as environment variables. Exiting...');
@@ -51,6 +54,10 @@ slack.on('message', function(data) {
             return;
         }
 
+        pmx.emit('alias:match', {
+            aliases: matching
+        });
+
         matching = _.chain(matching).pluck('to').flatten().unique().value();
 
         var message = slack.getUser(data.user).name +
@@ -79,6 +86,10 @@ app.get('/', function(req, res) {
 
         if(text.indexOf('list') === 0) {
             var matches = _.where(aliases, {channel: req.query.channel_id});
+
+            pmx.emit('alias:list', {
+                channel: req.query.channel_id
+            });
 
             if(matches && matches.length) {
                 var message = 'These are the aliases set up for this channel:\n';
@@ -127,6 +138,14 @@ app.get('/', function(req, res) {
 
             if(existing) {
                 aliases = _.reject(aliases, existing);
+
+                pmx.emit('alias:update', {
+                    channel: req.query.channel_id
+                });
+            } else {
+                pmx.emit('alias:create', {
+                    channel: req.query.channel_id
+                });
             }
 
             aliases.push({
@@ -159,6 +178,10 @@ app.get('/', function(req, res) {
             if(existing.author !== req.query.user_id) {
                 return res.status(400).send('You cannot remove an alias made by someone else').end();
             }
+
+            pmx.emit('alias:remove', {
+                channel: req.query.channel_id
+            });
 
             aliases = _.reject(aliases, existing);
 
