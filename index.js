@@ -18,7 +18,7 @@ DB.connect(function() {
     DB.load(function(aliases) {
         var slack = new slackAPI({
             'token': process.env.SLACK_BOT_TOKEN,
-            'logging': true
+            'logging': (process.env.DEBUG || false)
         });
 
         slack.on('message', function(data) {
