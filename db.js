@@ -2,12 +2,12 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 
 var DataBase = function() {
-    if(!process.env.MONGOLAB_URL && !process.env.MONGO_URL) {
+    if(!process.env.MONGOLAB_URI && !process.env.MONGO_URL) {
         throw new Error('Missing mongodb url environment variable. Exiting...');
         process.exit(1);
     }
 
-    this.url = process.env.MONGOLAB_URL || process.env.MONGO_URL;
+    this.url = process.env.MONGOLAB_URI || process.env.MONGO_URL;
 };
 
 DataBase.prototype = {
