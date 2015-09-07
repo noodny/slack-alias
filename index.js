@@ -7,6 +7,10 @@ var DataBase = require('./db.js');
 
 var DB = new DataBase();
 
+if(process.env.APP_URL) {
+    require('heroku-self-ping')(process.env.APP_URL);
+}
+
 if(!process.env.SLACK_BOT_TOKEN || !process.env.SLACK_SLASH_TOKEN) {
     throw new Error('Slack tokens not set as environment variables. Exiting...');
     process.exit(1);

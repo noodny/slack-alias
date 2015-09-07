@@ -23,6 +23,7 @@
   "dependencies": {
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
+    "heroku-self-ping": "^1.1.2",
     "lodash": "^3.10.1",
     "mongodb": "^2.0.42",
     "pm2": "^0.14.7",
